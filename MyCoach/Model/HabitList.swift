@@ -18,45 +18,37 @@ class HabitList {
     }
     
     //Method for reading
-    func readList() {
+    func readList(completionHandler: @escaping (Error?) -> Void) {
         
         //empty both arrays
         habits.removeAll()
         habitsID.removeAll()
         
-        //userID = (Auth.auth().currentUser?.uid)!
         
         //Create reference to database for specified user
         let ref = Database.database().reference()
-        print(ref)
-        print(userID)
+        //Check if user has a registered list in database
         ref.observeSingleEvent(of: .value, with: { (snapshot) in
             if snapshot.hasChild(userID){
-                
-                print("true rooms exist")
-                
-            }else{
-                
-                print("false room doesn't exist")
-            }
-        })
-        ref.child(userID).observeSingleEvent(of: .value, with: { (snapshot) in
-            print(snapshot)
-            //if habit is registered in database for signed in user
-            if snapshot.childrenCount > 0 {
-                //itereate through users habits and add to habits array as strings
-                for item in snapshot.children.allObjects as! [DataSnapshot] {
-                    let userItemObject = item.value as! [String: AnyObject]
-                    habits.append(userItemObject["habitText"] as! String)
-                    print(habits)
-                    habitsID.append(item.key as String)
-                    print(habitsID)
+                ref.child(userID).observeSingleEvent(of: .value, with: { (snapshot) in
+                    //itereate through users habits and add to habits array as strings
+                    for item in snapshot.children.allObjects as! [DataSnapshot] {
+                        let userItemObject = item.value as! [String: AnyObject]
+                        habits.append(userItemObject["habitText"] as! String)
+                        print(habits)
+                        habitsID.append(item.key as String)
+                        print(habitsID)
+                        completionHandler(nil)
+                    }
+                //error handler
+                }) { (error) in
+                    completionHandler(error)
                 }
             }
-            //error handler
-        }) { (error) in
-            print(error.localizedDescription)
-        }
+            else{   //No existing list in database
+                completionHandler(nil)
+            }
+        })
     }
 
     
@@ -75,20 +67,28 @@ class HabitList {
                 print("Habit saved successfully!")
             }
         }
-        //}
+        
     }
     
     func removeHabit(habitID : String) { //Remove habit from database
         let ref = Database.database().reference().child(userID).child(habitID)
         
         ref.removeValue { error, _ in
-            print(error)
         }
     }
     
-    func editHabit(habitID : String, newHabitText : String) {
+    func editHabit(habitID : String, newHabitText : String, completionHandler: @escaping (Error?) -> Void) {
         //Update value for edited habit with habit ID
-        Database.database().reference().child(userID).updateChildValues([habitID:newHabitText])
+        let ref = Database.database().reference().child(userID).child(habitID)
+        ref.updateChildValues(["habitText":newHabitText]) { (error, ref) in
+            //error handler
+            if error == nil {
+                completionHandler(nil)
+            }
+            else {
+                completionHandler(error)
+            }
+        }
     }
     
 }

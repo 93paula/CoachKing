@@ -20,68 +20,51 @@ class User {
         password = passwordText
     }
     
-    func SignIn() {
+    func SignIn(completionHandler: @escaping (Error?) -> Void) {
         Auth.auth().signIn(withEmail: email, password: password) { (user, error) in
             if error == nil {
-                
-                //Print into the console if successfully logged in
-                print("You have successfully logged in")
-                
+                completionHandler(nil)
+                userID = (Auth.auth().currentUser?.uid)!
             }
             else {
-                
-                print("error in sing in")
-                //Tells the user that there is an error and then gets firebase to tell them the error
-                /*let alertController = UIAlertController(title: "Error", message: error?.localizedDescription, preferredStyle: .alert)
-                
-                let defaultAction = UIAlertAction(title: "OK", style: .cancel, handler: nil)
-                alertController.addAction(defaultAction)
-                
-                present(alertController, animated: true, completion: nil)*/
+                completionHandler(error)
             }
  
         }
         
-        print(Auth.auth().currentUser?.uid)
-        
     }
     
-    func Register(){
+    func Register(completionHandler: @escaping (Error?) -> Void) {
         //Create users in firebase
-        //var returnValue : Bool = false
         Auth.auth().createUser(withEmail: email, password: password) { (user, error) in
             if error == nil {
-                print("You have successfully signed up")
-                //returnValue = true
+                completionHandler(nil)
             }
             else {
-                print(error)
-                //returnValue = false
+                completionHandler(error)
             }
-            
         }
-        
-        //print (returnValue)
-        
-        //return returnValue
     }
     
-    func ForgotPassword() {
-        Auth.auth().sendPasswordReset(withEmail: email, completion: { (error) in
+    func ForgotPassword(completionHandler: @escaping (Error?) -> Void) {
+        Auth.auth().sendPasswordReset(withEmail: email) { (error) in
             
             if error == nil {
-                print("Password reset")
+                completionHandler(nil)
             }
-        })
+            else {
+                completionHandler(error)
+            }
+        }
     }
     
-    func LogOut() {
+    func LogOut(completionHandler: @escaping (Error?) -> Void) {
         if Auth.auth().currentUser != nil {
             do {
                 try Auth.auth().signOut()
-                userID = ""
+                completionHandler(nil)
             } catch let error as NSError {
-                print(error.localizedDescription)
+                completionHandler(error)
             }
         }
     }

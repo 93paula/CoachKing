@@ -55,11 +55,23 @@ class NewHabitViewController: UIViewController {
             //Update database
             let initHabitList = HabitList()
             initHabitList.writeItem(habitText: habitText.text!)
-            initHabitList.readList()
-            
-            //Go back to habit table view controller
-            self.dismiss(animated: true, completion: nil)
-        
+            initHabitList.readList { (error) in
+                DispatchQueue.main.async {
+                    if error == nil {
+                        //Go back to habit table view controller
+                        self.dismiss(animated: true, completion: nil)
+                    }
+                        //If there is an error with reading of habits
+                    else {
+                        let alertController = UIAlertController(title: "Error", message: error?.localizedDescription, preferredStyle: .alert)
+                        
+                        let defaultAction = UIAlertAction(title: "OK", style: .cancel, handler: nil)
+                        alertController.addAction(defaultAction)
+                        
+                        self.present(alertController, animated: true, completion: nil)
+                    }
+                }
+            }
         }
     }
     

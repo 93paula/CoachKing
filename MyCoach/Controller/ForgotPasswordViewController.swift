@@ -38,29 +38,21 @@ class ForgotPasswordViewController: UIViewController {
             
         } else {
             let initUser = User(emailText: emailTextField.text!, passwordText: "")
-            initUser.ForgotPassword()
-            self.dismiss(animated: true, completion: nil)
-            
-            /*
-            var title = ""
-            var message = ""
-            
-            if error != nil {
-                title = "Error!"
-                message = (error?.localizedDescription)!
-            } else {
-                title = "Success!"
-                message = "Password reset email sent."
-                self.emailTextField.text = ""
+            initUser.ForgotPassword { (error) in
+                DispatchQueue.main.async {
+                    if error == nil {
+                        self.dismiss(animated: true, completion: nil)
+                    }
+                    else {
+                        let alertController = UIAlertController(title: "Error", message: error?.localizedDescription, preferredStyle: .alert)
+                        
+                        let defaultAction = UIAlertAction(title: "OK", style: .cancel, handler: nil)
+                        alertController.addAction(defaultAction)
+                        
+                        self.present(alertController, animated: true, completion: nil)
+                    }
+                }
             }
-            
-            let alertController = UIAlertController(title: title, message: message, preferredStyle: .alert)
-            
-            let defaultAction = UIAlertAction(title: "OK", style: .cancel, handler: nil)
-            alertController.addAction(defaultAction)
-            
-            self.present(alertController, animated: true, completion: nil) */
- 
         }
     }
     @IBAction func cancelButton_Click(_ sender: UIButton) {

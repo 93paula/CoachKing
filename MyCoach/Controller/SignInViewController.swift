@@ -37,8 +37,21 @@ class SignInViewController: UIViewController {
         }
         else {
             let initUser = User(emailText: emailTextField.text!, passwordText: passwordTextField.text!)
-            initUser.SignIn()
-            self.performSegue(withIdentifier: "SignInSegue", sender: nil)
+            initUser.SignIn { (error) in
+                DispatchQueue.main.async {
+                    if error == nil {
+                        self.performSegue(withIdentifier: "SignInSegue", sender: nil)
+                    }
+                    else {
+                        let alertController = UIAlertController(title: "Error", message: error?.localizedDescription, preferredStyle: .alert)
+                        
+                        let defaultAction = UIAlertAction(title: "OK", style: .cancel, handler: nil)
+                        alertController.addAction(defaultAction)
+                        
+                        self.present(alertController, animated: true, completion: nil)
+                    }
+                }
+            }
         }
     }
     

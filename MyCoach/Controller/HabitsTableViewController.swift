@@ -14,7 +14,7 @@ class HabitsTableViewController: UITableViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+
     }
     
     override func didReceiveMemoryWarning() {
@@ -28,18 +28,11 @@ class HabitsTableViewController: UITableViewController {
         self.dismiss(animated: true, completion: nil)
     }
     
-    //Segues
-    @IBAction func cancel(segue:UIStoryboardSegue) {
-        
-    }
     
-    @IBAction func done(segue:UIStoryboardSegue) {
+    override func viewWillAppear(_ animated: Bool){
         tableView.reloadData()
     }
-    
-    @IBAction func saveEdit(segue:UIStoryboardSegue) {
-        
-    }
+ 
 
     // MARK: - Table view data source
     override func numberOfSections(in tableView: UITableView) -> Int {
@@ -60,25 +53,6 @@ class HabitsTableViewController: UITableViewController {
         return cell
     }
     
-
-    /*
-    // Override to support conditional editing of the table view.
-    override func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
-        // Return false if you do not want the specified item to be editable.
-        return true
-    }
-    */
-
-    /*
-    // Override to support editing the table view.
-    override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {
-        if editingStyle == .delete {
-            // Delete the row from the data source
-            habits.remove(at: indexPath.row)
-            tableView.deleteRows(at: [indexPath], with: .fade)
-        }
-    }*/
-    
     override func tableView(_ tableView: UITableView, editActionsForRowAt indexPath: IndexPath) -> [UITableViewRowAction]? {
         
         let delete = UITableViewRowAction(style: .destructive, title: "Delete") { (action, indexPath) in
@@ -93,13 +67,12 @@ class HabitsTableViewController: UITableViewController {
         }
         
         let edit = UITableViewRowAction(style: .default, title: "Edit") { (action, indexPath) in
-            //Create instance
-            let vc = EditHabitViewController(nibName: "EditHabitViewController", bundle: nil)
-            //Write chosen habit text to text field in next view controller
-            vc.habitTextField.text = habits[indexPath.row]
-            //Set habit ID of habit which is edited
-            vc.habitID = habitsID[indexPath.row]
-            //Perform segue
+            //empty array
+            editHabit.removeAll()
+            //Save habit ID and habit text in array
+            editHabit.append(habitsID[indexPath.row])
+            editHabit.append(habits[indexPath.row])
+            //Perform Segue
             self.performSegue(withIdentifier: "editHabitSegue", sender: nil)
         }
         
@@ -108,31 +81,5 @@ class HabitsTableViewController: UITableViewController {
         return [delete, edit]
         
     }
-    
-
-    /*
-    // Override to support rearranging the table view.
-    override func tableView(_ tableView: UITableView, moveRowAt fromIndexPath: IndexPath, to: IndexPath) {
-
-    }
-    */
-
-    /*
-    // Override to support conditional rearranging of the table view.
-    override func tableView(_ tableView: UITableView, canMoveRowAt indexPath: IndexPath) -> Bool {
-        // Return false if you do not want the item to be re-orderable.
-        return true
-    }
-    */
-
-    /*
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destinationViewController.
-        // Pass the selected object to the new view controller.
-    }
-    */
 
 }
